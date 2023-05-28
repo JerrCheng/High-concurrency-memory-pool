@@ -1,20 +1,10 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include<list>
-#include <time.h>
-using std::cout;
-using std::endl;
-
-
-
-
+#include"Common.h"
 #ifdef _WIN32
 #include<windows.h>
 #else
 // 
 #endif
-
 
 // 定长内存池
 //template<size_t N>
@@ -36,42 +26,40 @@ inline static void* SystemAlloc(size_t kpage)
 	return ptr;
 }
 
-template <class T>
+template<class T>
 class ObjectPool
 {
 public:
 	T* New()
 	{
-		T * obj = nullptr;
-		
-	//优先把换回来的内存对象，重复利用
-	if (_freeList)
-	{ 
-		void* next = (*(void**)_freeList); //二级指针，无论在32位还是64位平台下都可以运行
-		obj = (T*)_freeList;
-		_freeList = next;
-	}
+		T* obj = nullptr;
 
-	else
-	{
-		//剩余内存块不够一个对象大小时，则重新开大块空间
-		if (_remainBytes < sizeof(T))
+		// 优先把还回来内存块对象，再次重复利用
+		if (_freeList)
 		{
-			_remainBytes = 128 * 1024;
-			//_memory = (char*)malloc(_remainBytes);
-			
-			//右移相当于除以8k，换算出页数
-			_memory = (char*)SystemAlloc(_remainBytes >> 13);
-			if (_memory == nullptr)
-			{
-				throw std::bad_alloc();
-			}
+			void* next = *((void**)_freeList);
+			obj = (T*)_freeList;
+			_freeList = next;
 		}
-		obj = (T*)_memory;
-		size_t objSize = sizeof(T) < sizeof(void*) ? sizeof(void*) : sizeof(T);
-		_memory += objSize;
-		_remainBytes -= objSize;
-	}
+		else
+		{
+			// 剩余内存不够一个对象大小时，则重新开大块空间
+			if (_remainBytes < sizeof(T))
+			{
+				_remainBytes = 128 * 1024;
+				//_memory = (char*)malloc(_remainBytes);
+				_memory = (char*)SystemAlloc(_remainBytes >> 13);
+				if (_memory == nullptr)
+				{
+					throw std::bad_alloc();
+				}
+			}
+
+			obj = (T*)_memory;
+			size_t objSize = sizeof(T) < sizeof(void*) ? sizeof(void*) : sizeof(T);
+			_memory += objSize;
+			_remainBytes -= objSize;
+		}
 
 		// 定位new，显示调用T的构造函数初始化
 		new(obj)T;
@@ -87,17 +75,15 @@ public:
 		// 头插
 		*(void**)obj = _freeList;
 		_freeList = obj;
-
 	}
 
 private:
-	char* _memory = nullptr;//指向大块内存的指针
-	size_t _remainBytes = 0; //大块内存切分过程中剩余的字节数
-	void* _freeList = nullptr; //归还过程中链表的自由链表的头指针
+	char* _memory = nullptr; // 指向大块内存的指针
+	size_t _remainBytes = 0; // 大块内存在切分过程中剩余字节数
+
+	void* _freeList = nullptr; // 还回来过程中链接的自由链表的头指针
 };
 
-
-//测试效率
 struct TreeNode
 {
 	int _val;

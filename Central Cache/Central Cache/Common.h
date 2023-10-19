@@ -1,8 +1,8 @@
 #pragma once
-#pragma once
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
 
 #include <time.h>
@@ -14,8 +14,16 @@
 using std::cout;
 using std::endl;
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+// ...
+#endif
+
 static const size_t MAX_BYTES = 256 * 1024;
 static const size_t NFREELIST = 208;
+static const size_t NPAGES = 129;
+static const size_t PAGE_SHIFT = 13;
 
 #ifdef _WIN64
 typedef unsigned long long PAGE_ID;
@@ -24,6 +32,21 @@ typedef size_t PAGE_ID;
 #else
 // linux
 #endif
+
+// 直接去堆上按页申请空间
+inline static void* SystemAlloc(size_t kpage)
+{
+#ifdef _WIN32
+	void* ptr = VirtualAlloc(0, kpage << 13, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+#else
+	// linux下brk mmap等
+#endif
+
+	if (ptr == nullptr)
+		throw std::bad_alloc();
+
+	return ptr;
+}
 
 static void*& NextObj(void* obj)
 {
@@ -43,12 +66,32 @@ public:
 		//*(void**)obj = _freeList;
 		NextObj(obj) = _freeList;
 		_freeList = obj;
+
+		++_size;
 	}
 
-	void PushRange(void* start, void* end)
+	void PushRange(void* start, void* end, size_t n)
 	{
 		NextObj(end) = _freeList;
 		_freeList = start;
+
+		_size += n;
+	}
+
+	void PopRange(void*& start, void*& end, size_t n)
+	{
+		assert(n <= _size);
+		start = _freeList;
+		end = start;
+
+		for (size_t i = 0; i < n - 1; ++i)
+		{
+			end = NextObj(end);
+		}
+
+		_freeList = NextObj(end);
+		NextObj(end) = nullptr;
+		_size -= n;
 	}
 
 	void* Pop()
@@ -58,6 +101,7 @@ public:
 		// 头删
 		void* obj = _freeList;
 		_freeList = NextObj(obj);
+		--_size;
 
 		return obj;
 	}
@@ -72,9 +116,15 @@ public:
 		return _maxSize;
 	}
 
+	size_t Size()
+	{
+		return _size;
+	}
+
 private:
 	void* _freeList = nullptr;
 	size_t _maxSize = 1;
+	size_t _size = 0;
 };
 
 // 计算对象大小的对齐映射规则
@@ -209,20 +259,37 @@ public:
 
 		return num;
 	}
+
+	// 计算一次向系统获取几个页
+	// 单个对象 8byte
+	// ...
+	// 单个对象 256KB
+	static size_t NumMovePage(size_t size)
+	{
+		size_t num = NumMoveSize(size);
+		size_t npage = num * size;
+
+		npage >>= PAGE_SHIFT;
+		if (npage == 0)
+			npage = 1;
+
+		return npage;
+	}
 };
 
 // 管理多个连续页大块内存跨度结构
 struct Span
 {
-	PAGE_ID _pageId = 0;   //大块内存起始页的页号
-	size_t _n = 0;		   //页的数量
+	PAGE_ID _pageId = 0; // 大块内存起始页的页号
+	size_t  _n = 0;      // 页的数量
 
-	Span* _next = nullptr;	//双链表结构
+	Span* _next = nullptr;	// 双向链表的结构
 	Span* _prev = nullptr;
 
-	size_t _useCount = 0;		//切好的小块内存，被分配给thread cache的计数
-	void* _freeList = nullptr;  //切好的小块内存的自由链表
+	size_t _useCount = 0; // 切好小块内存，被分配给thread cache的计数
+	void* _freeList = nullptr;  // 切好的小块内存的自由链表
 
+	bool _isUse = false;          // 是否在被使用
 };
 
 // 带头双向循环链表 
@@ -234,6 +301,33 @@ public:
 		_head = new Span;
 		_head->_next = _head;
 		_head->_prev = _head;
+	}
+
+	Span* Begin()
+	{
+		return _head->_next;
+	}
+
+	Span* End()
+	{
+		return _head;
+	}
+
+	bool Empty()
+	{
+		return _head->_next == _head;
+	}
+
+	void PushFront(Span* span)
+	{
+		Insert(Begin(), span);
+	}
+
+	Span* PopFront()
+	{
+		Span* front = _head->_next;
+		Erase(front);
+		return front;
 	}
 
 	void Insert(Span* pos, Span* newSpan)

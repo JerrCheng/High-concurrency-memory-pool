@@ -1,0 +1,31 @@
+﻿  Benchmark.cpp
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(48,27): error C4839: 将类 "std::atomic<unsigned int>" 作为可变参数函数的参数的非标准用法
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(48,27): message : 不会调用构造函数和析构函数；该类的位副本将作为参数进行传递
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2843,23): message : 参见“std::atomic<unsigned int>”的声明
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(48,42): error C2280: “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 尝试引用已删除的函数
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254): message : 参见“std::atomic<unsigned int>::atomic”的声明
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254,5): message : “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 已隐式删除函数
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(47,9): warning C4477: “printf”: 格式字符串“%u”需要类型“unsigned int”的参数，但可变参数 4 拥有了类型“std::atomic<unsigned int>”
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(51,27): error C4839: 将类 "std::atomic<unsigned int>" 作为可变参数函数的参数的非标准用法
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(51,27): message : 不会调用构造函数和析构函数；该类的位副本将作为参数进行传递
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2843,23): message : 参见“std::atomic<unsigned int>”的声明
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(51,40): error C2280: “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 尝试引用已删除的函数
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254): message : 参见“std::atomic<unsigned int>::atomic”的声明
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254,5): message : “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 已隐式删除函数
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(50,9): warning C4477: “printf”: 格式字符串“%u”需要类型“unsigned int”的参数，但可变参数 4 拥有了类型“std::atomic<unsigned int>”
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(101,27): error C4839: 将类 "std::atomic<unsigned int>" 作为可变参数函数的参数的非标准用法
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(101,27): message : 不会调用构造函数和析构函数；该类的位副本将作为参数进行传递
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2843,23): message : 参见“std::atomic<unsigned int>”的声明
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(101,42): error C2280: “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 尝试引用已删除的函数
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254): message : 参见“std::atomic<unsigned int>::atomic”的声明
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254,5): message : “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 已隐式删除函数
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(100,9): warning C4477: “printf”: 格式字符串“%u”需要类型“unsigned int”的参数，但可变参数 4 拥有了类型“std::atomic<unsigned int>”
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(104,27): error C4839: 将类 "std::atomic<unsigned int>" 作为可变参数函数的参数的非标准用法
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(104,27): message : 不会调用构造函数和析构函数；该类的位副本将作为参数进行传递
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2843,23): message : 参见“std::atomic<unsigned int>”的声明
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(104,40): error C2280: “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 尝试引用已删除的函数
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254): message : 参见“std::atomic<unsigned int>::atomic”的声明
+E:\VS\VC\Tools\MSVC\14.29.30133\include\atomic(2254,5): message : “std::atomic<unsigned int>::atomic(const std::atomic<unsigned int> &)”: 已隐式删除函数
+E:\练习\high-concurrency-memory-pool\性能测试及优化\性能测试及优化\Benchmark.cpp(103,9): warning C4477: “printf”: 格式字符串“%u”需要类型“unsigned int”的参数，但可变参数 4 拥有了类型“std::atomic<unsigned int>”
+  UnitTest.cpp
+  正在生成代码...
